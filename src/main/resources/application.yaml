@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: JabardastCoderBackend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/jabardastcoder
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
