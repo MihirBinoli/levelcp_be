@@ -29,11 +29,11 @@ public class CodeforcesProblemEntity implements Serializable {
     @Column(name = "problem_rating")
     private Integer problemRating;
 
-    @Column(name = "problem_tags", columnDefinition = "jsonb")
-    private JsonNode problemTags;
+    @Column(name = "problem_tags", columnDefinition = "text")
+    private String problemTags;
 
     @Column(name = "active")
-    private OffsetDateTime active;
+    private Boolean active;
 
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
@@ -84,19 +84,19 @@ public class CodeforcesProblemEntity implements Serializable {
         this.problemRating = problemRating;
     }
 
-    public JsonNode getProblemTags() {
+    public String getProblemTags() {
         return problemTags;
     }
 
-    public void setProblemTags(JsonNode problemTags) {
+    public void setProblemTags(String problemTags) {
         this.problemTags = problemTags;
     }
 
-    public OffsetDateTime getActive() {
+    public Boolean getActive() {
         return active;
     }
 
-    public void setActive(OffsetDateTime active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 

@@ -30,10 +30,10 @@ public class RoundEntity implements Serializable {
     private OffsetDateTime endTime;
 
     @Column(name = "status")
-    private OffsetDateTime status;
+    private String status;
 
     @Column(name = "active")
-    private OffsetDateTime active;
+    private Boolean active;
 
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
@@ -84,19 +84,19 @@ public class RoundEntity implements Serializable {
         this.endTime = endTime;
     }
 
-    public OffsetDateTime getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(OffsetDateTime status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public OffsetDateTime getActive() {
+    public Boolean getActive() {
         return active;
     }
 
-    public void setActive(OffsetDateTime active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 

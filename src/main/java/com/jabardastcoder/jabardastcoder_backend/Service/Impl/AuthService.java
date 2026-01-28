@@ -81,6 +81,7 @@ public class AuthService {
         Optional<UserEntity> userEntity = userRepository.findByEmail(request.getEmail());
         if(userEntity.isEmpty()){
             // throw error prompting user to login
+            throw new RuntimeException("User not found");
         }else{
             UserEntity user = userEntity.get();
             // call api to get the data
@@ -118,6 +119,8 @@ public class AuthService {
                 }
 
                 user.setCodeforcesHandle(request.getCfHandle());
+                String token = jwtUtil.generateToken(user);
+                return new LoginResponse(token);
             } catch (HttpServerErrorException e) {
                 throw new RuntimeException(e);
             }

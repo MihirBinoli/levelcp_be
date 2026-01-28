@@ -76,6 +76,7 @@ User
                 }
 
             }
+            return null;
         }catch (Exception e){
             // user not registered and userid is null
             throw e;
