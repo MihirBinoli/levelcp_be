@@ -16,6 +16,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+      format_sql: true
     show-sql: true
 #  jpa:
 #    database-platform: org.hibernate.dialect.H2Dialect
@@ -27,4 +28,4 @@ spring:
 #        format_sql: true
 
 
-cfURL: https://codeforces.com/api/user.info?handles=
+cfURL: https://codeforces.com/api/

@@ -8,6 +8,7 @@ import com.jabardastcoder.jabardastcoder_backend.Entity.LevelsEntity;
 import com.jabardastcoder.jabardastcoder_backend.Entity.UserEntity;
 import com.jabardastcoder.jabardastcoder_backend.Repository.LevelsRepository;
 import com.jabardastcoder.jabardastcoder_backend.Repository.UserRepository;
+import com.jabardastcoder.jabardastcoder_backend.Util.CFUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,9 @@ public class AuthService {
 
     @Autowired
     LevelsRepository levelsRepository;
+
+    @Autowired
+    CFUtility cfUtility;
 
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -86,12 +90,10 @@ public class AuthService {
             UserEntity user = userEntity.get();
             // call api to get the data
             try {
-                String url = cfUrl + request.getCfHandle();
-                RestTemplate restTemplate = new RestTemplate();
-                ResponseEntity<JsonNode> response =
-                        restTemplate.getForEntity(url, JsonNode.class);
-
-                JsonNode root = response.getBody();
+                JsonNode root = null !=
+                        cfUtility.getUserResponse(request.getCfHandle()).getBody() ? (JsonNode)cfUtility
+                        .getUserResponse(request.getCfHandle()).getBody()
+                        : null;
 
                 if (root != null && "OK".equalsIgnoreCase(root.get("status").asText())) {
 

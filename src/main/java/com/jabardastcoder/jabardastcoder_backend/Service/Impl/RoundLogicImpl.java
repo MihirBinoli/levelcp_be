@@ -63,11 +63,11 @@ User
                     // fetch current rating and maxrating from level id
                     Integer levelId = userEntity.getCurrentLevelId();
                     // fetch min - max rating on the basis of user current level
-
                     Optional<LevelsEntity> levelsEntityOp = levelsRepository.findByLevelNumber(levelId);
 
                     Integer minRating = levelsEntityOp.get().getMinRating(),
                             maxRating = levelsEntityOp.get().getMaxRating();
+
 
 
 

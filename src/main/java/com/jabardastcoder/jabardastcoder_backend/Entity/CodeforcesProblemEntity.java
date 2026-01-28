@@ -21,7 +21,7 @@ public class CodeforcesProblemEntity implements Serializable {
     private Integer cfContestId;
 
     @Column(name = "cf_problem_id")
-    private Integer cfProblemId;
+    private String cfProblemId;
 
     @Column(name = "problem_name")
     private String problemName;
@@ -31,6 +31,9 @@ public class CodeforcesProblemEntity implements Serializable {
 
     @Column(name = "problem_tags", columnDefinition = "text")
     private String problemTags;
+
+    @Column(name = "cf_problem_solve_count")
+    private Integer cfProblemSolvedCount;
 
     @Column(name = "active")
     private Boolean active;
@@ -60,11 +63,11 @@ public class CodeforcesProblemEntity implements Serializable {
         this.cfContestId = cfContestId;
     }
 
-    public Integer getCfProblemId() {
+    public String getCfProblemId() {
         return cfProblemId;
     }
 
-    public void setCfProblemId(Integer cfProblemId) {
+    public void setCfProblemId(String cfProblemId) {
         this.cfProblemId = cfProblemId;
     }
 
@@ -122,5 +125,13 @@ public class CodeforcesProblemEntity implements Serializable {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Integer getCfProblemSolvedCount() {
+        return cfProblemSolvedCount;
+    }
+
+    public void setCfProblemSolvedCount(Integer cfProblemSolvedCount) {
+        this.cfProblemSolvedCount = cfProblemSolvedCount;
     }
 }
