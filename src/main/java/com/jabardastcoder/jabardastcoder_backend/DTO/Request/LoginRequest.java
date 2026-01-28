@@ -7,6 +7,7 @@ public class LoginRequest {
     private String userName;
     private String email;
     private String password;
+    private String cfHandle;
 
     public String getUserName() {
         return userName;
@@ -30,5 +31,13 @@ public class LoginRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getCfHandle() {
+        return cfHandle;
+    }
+
+    public void setCfHandle(String cfHandle) {
+        this.cfHandle = cfHandle;
     }
 }

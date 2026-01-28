@@ -30,4 +30,9 @@ public class AuthController {
     public LoginResponse login(@RequestBody LoginRequest request) {
         return authService.login(request);
     }
+
+    @PutMapping("/addCfHandle")
+    public LoginResponse addCfHandle(@RequestBody LoginRequest request){
+        return authService.addCfHandle(request);
+    }
 }

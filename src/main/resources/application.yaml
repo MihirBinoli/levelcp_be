@@ -26,3 +26,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+
+cfURL: https://codeforces.com/api/user.info?handles=

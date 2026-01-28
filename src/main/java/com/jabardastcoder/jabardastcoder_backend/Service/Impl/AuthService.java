@@ -1,24 +1,41 @@
 package com.jabardastcoder.jabardastcoder_backend.Service.Impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.jabardastcoder.jabardastcoder_backend.Config.JwtUtil;
 import com.jabardastcoder.jabardastcoder_backend.DTO.Request.LoginRequest;
 import com.jabardastcoder.jabardastcoder_backend.DTO.Response.LoginResponse;
+import com.jabardastcoder.jabardastcoder_backend.Entity.LevelsEntity;
 import com.jabardastcoder.jabardastcoder_backend.Entity.UserEntity;
+import com.jabardastcoder.jabardastcoder_backend.Repository.LevelsRepository;
 import com.jabardastcoder.jabardastcoder_backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+
+import java.time.OffsetDateTime;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder =
-            new BCryptPasswordEncoder();
 
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+
+    @Value(value = "${cfURL}")
+    private String cfUrl;
 
     @Autowired
     JwtUtil jwtUtil;
+
+    @Autowired
+    LevelsRepository levelsRepository;
 
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -30,19 +47,19 @@ public class AuthService {
             throw new RuntimeException("Email already in use");
         }
 
-        if (userRepository.existsByUsername(request.getUserName())) {
-            throw new RuntimeException("Username already in use");
-        }
-
         UserEntity user = new UserEntity();
         user.setUsername(request.getUserName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setActive(true);
+        user.setVersion(1);
+        user.setCreatedAt(OffsetDateTime.now());
 
         UserEntity saved = userRepository.save(user);
 
-        return new LoginResponse();
+        String token = jwtUtil.generateToken(saved);
+
+        return new LoginResponse(token);
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -59,4 +76,51 @@ public class AuthService {
         return new LoginResponse(token);
     }
 
+
+    public LoginResponse addCfHandle(LoginRequest request) {
+        Optional<UserEntity> userEntity = userRepository.findByEmail(request.getEmail());
+        if(userEntity.isEmpty()){
+            // throw error prompting user to login
+        }else{
+            UserEntity user = userEntity.get();
+            // call api to get the data
+            try {
+                String url = cfUrl + request.getCfHandle();
+                RestTemplate restTemplate = new RestTemplate();
+                ResponseEntity<JsonNode> response =
+                        restTemplate.getForEntity(url, JsonNode.class);
+
+                JsonNode root = response.getBody();
+
+                if (root != null && "OK".equalsIgnoreCase(root.get("status").asText())) {
+
+                    JsonNode userInfo = root.get("result").get(0);
+
+                    int currentRating = userInfo.has("rating")
+                            ? userInfo.get("rating").asInt()
+                            : 0;
+
+                    int maxRating = userInfo.has("maxRating")
+                            ? userInfo.get("maxRating").asInt()
+                            : 0;
+
+                    // fetch level entity based on the current rating
+                    Iterable<LevelsEntity> levelsEntities = levelsRepository.findAll();
+
+                    LevelsEntity levelsEntity = StreamSupport.stream(levelsEntities.spliterator(), false).filter(
+                            ent -> ent.getMinRating() <= currentRating && currentRating < ent.getMaxRating()
+                            ).findFirst().get();
+
+                    user.setCurrentLevelId(levelsEntity.getLevelNumber());
+                    user.setVersion(user.getVersion() + 1);
+                    user.setUpdatedAt(OffsetDateTime.now());
+
+                }
+
+                user.setCodeforcesHandle(request.getCfHandle());
+            } catch (HttpServerErrorException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
