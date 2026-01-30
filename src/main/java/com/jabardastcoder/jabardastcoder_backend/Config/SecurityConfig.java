@@ -1,6 +1,6 @@
 package com.jabardastcoder.jabardastcoder_backend.Config;
 
-import com.jabardastcoder.jabardastcoder_backend.Repository.UserRepository;
+import com.jabardastcoder.jabardastcoder_backend.DAO.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,10 +23,10 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
-    private final UserRepository userRepository;
+    private final UserDAO userDAO;
 
-    public SecurityConfig(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public SecurityConfig(UserDAO userDAO) {
+        this.userDAO = userDAO;
     }
 
 
@@ -55,7 +55,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> (org.springframework.security.core.userdetails.UserDetails) userRepository.findByEmail(username)
+        return username -> (org.springframework.security.core.userdetails.UserDetails) userDAO.findByEmail(username)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found: " + username)
                 );

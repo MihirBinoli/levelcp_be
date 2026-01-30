@@ -6,16 +6,14 @@ import com.jabardastcoder.jabardastcoder_backend.DTO.Request.LoginRequest;
 import com.jabardastcoder.jabardastcoder_backend.DTO.Response.LoginResponse;
 import com.jabardastcoder.jabardastcoder_backend.Entity.LevelsEntity;
 import com.jabardastcoder.jabardastcoder_backend.Entity.UserEntity;
-import com.jabardastcoder.jabardastcoder_backend.Repository.LevelsRepository;
-import com.jabardastcoder.jabardastcoder_backend.Repository.UserRepository;
+import com.jabardastcoder.jabardastcoder_backend.DAO.LevelsDAO;
+import com.jabardastcoder.jabardastcoder_backend.DAO.UserDAO;
 import com.jabardastcoder.jabardastcoder_backend.Util.CFUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -24,7 +22,7 @@ import java.util.stream.StreamSupport;
 @Service
 public class AuthService {
 
-    private final UserRepository userRepository;
+    private final UserDAO userDAO;
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -36,18 +34,18 @@ public class AuthService {
     JwtUtil jwtUtil;
 
     @Autowired
-    LevelsRepository levelsRepository;
+    LevelsDAO levelsDAO;
 
     @Autowired
     CFUtility cfUtility;
 
-    public AuthService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public AuthService(UserDAO userDAO) {
+        this.userDAO = userDAO;
     }
 
     public LoginResponse register(LoginRequest request) {
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userDAO.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already in use");
         }
 
@@ -59,7 +57,7 @@ public class AuthService {
         user.setVersion(1);
         user.setCreatedAt(OffsetDateTime.now());
 
-        UserEntity saved = userRepository.save(user);
+        UserEntity saved = userDAO.save(user);
 
         String token = jwtUtil.generateToken(saved);
 
@@ -68,7 +66,7 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest request) {
 
-        UserEntity user = userRepository.findByEmail(request.getEmail())
+        UserEntity user = userDAO.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -82,7 +80,7 @@ public class AuthService {
 
 
     public LoginResponse addCfHandle(LoginRequest request) {
-        Optional<UserEntity> userEntity = userRepository.findByEmail(request.getEmail());
+        Optional<UserEntity> userEntity = userDAO.findByEmail(request.getEmail());
         if(userEntity.isEmpty()){
             // throw error prompting user to login
             throw new RuntimeException("User not found");
@@ -108,7 +106,7 @@ public class AuthService {
                             : 0;
 
                     // fetch level entity based on the current rating
-                    Iterable<LevelsEntity> levelsEntities = levelsRepository.findAll();
+                    Iterable<LevelsEntity> levelsEntities = levelsDAO.findAll();
 
                     LevelsEntity levelsEntity = StreamSupport.stream(levelsEntities.spliterator(), false).filter(
                             ent -> ent.getMinRating() <= currentRating && currentRating < ent.getMaxRating()

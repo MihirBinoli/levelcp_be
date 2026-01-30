@@ -2,27 +2,19 @@ package com.jabardastcoder.jabardastcoder_backend.Util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.jabardastcoder.jabardastcoder_backend.Entity.CodeforcesProblemEntity;
-import com.jabardastcoder.jabardastcoder_backend.Repository.CodeforcesProblemRepository;
+import com.jabardastcoder.jabardastcoder_backend.DAO.CodeforcesProblemDAO;
 import jakarta.transaction.Transactional;
-import org.apache.juli.logging.Log;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.http.HttpHeaders;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 
 @Service
@@ -34,26 +26,21 @@ public class CFUtility {
     @Value(value = "${cfURL}")
     private static String cfUrl;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final CodeforcesProblemRepository problemRepository;
+    private final CodeforcesProblemDAO problemRepository;
 
-    public CFUtility(CodeforcesProblemRepository problemRepository) {
+    public CFUtility(CodeforcesProblemDAO problemRepository) {
         this.problemRepository = problemRepository;
     }
 
 
-    public ResponseEntity<?> getUserResponse(String st) {
+    public ResponseEntity<?> getUserResponse(String userHandle) {
         try {
-            String url = cfUrl +"user.info?handles="+  st;
+            String url = cfUrl +"user.info?handles="+  userHandle;
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<JsonNode> response =
-                    restTemplate.getForEntity(url, JsonNode.class);
-            response = restTemplate.getForEntity(url, JsonNode.class);
+            ResponseEntity<JsonNode> response = restTemplate.getForEntity(url, JsonNode.class);
             return response;
         }catch (Exception e){
             logger.severe(e.getMessage());

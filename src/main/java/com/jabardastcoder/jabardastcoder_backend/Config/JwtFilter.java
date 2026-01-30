@@ -1,7 +1,7 @@
 package com.jabardastcoder.jabardastcoder_backend.Config;
 
 import com.jabardastcoder.jabardastcoder_backend.Entity.UserEntity;
-import com.jabardastcoder.jabardastcoder_backend.Repository.UserRepository;
+import com.jabardastcoder.jabardastcoder_backend.DAO.UserDAO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +23,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserDAO userDAO;
 
 
     @Override
@@ -39,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 String email = jwtUtil.extractEmail(token);
 
-                UserEntity user = userRepository.findByEmail(email).orElse(null);
+                UserEntity user = userDAO.findByEmail(email).orElse(null);
 
                 if (user != null) {
                     UsernamePasswordAuthenticationToken auth =
