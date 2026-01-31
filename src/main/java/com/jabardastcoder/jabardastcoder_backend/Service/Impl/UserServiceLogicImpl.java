@@ -73,6 +73,11 @@ public class UserServiceLogicImpl implements UserLogic {
         return userProblemMapDAO.findAll(specification);
     }
 
+    @Override
+    public void saveUserProblems(List<UserProblemMapEntity> userProblemMapEntityLs) {
+        userProblemMapDAO.saveAll(userProblemMapEntityLs);
+    }
+
     private static Specification<UserProblemMapEntity> isActive() {
         return (root, query, cb) ->
                 cb.isTrue(root.get("active"));

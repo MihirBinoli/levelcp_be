@@ -11,11 +11,15 @@ import com.jabardastcoder.jabardastcoder_backend.DAO.UserDAO;
 import com.jabardastcoder.jabardastcoder_backend.Util.CFUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
@@ -125,5 +129,20 @@ public class AuthService {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public ResponseEntity<?> createRefreshToken(String refreshToken) {
+        if (refreshToken == null || !jwtUtil.isTokenValid(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+        }
+
+        String username = jwtUtil.getEmailFromToken(refreshToken);
+        UserEntity user = userDAO.findByEmail(username).get();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+        }
+
+        String newAccessToken = jwtUtil.generateToken(user);
+        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
     }
 }

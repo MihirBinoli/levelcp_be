@@ -1,16 +1,15 @@
+/*
 package com.jabardastcoder.jabardastcoder_backend.DTO;
 
 public class ProblemsDTO {
 
-    private Integer problemId;
-    private String problemName;
     private String problemLink;
 
-    public Integer getProblemId() {
+    public String getProblemId() {
         return problemId;
     }
 
-    public void setProblemId(Integer problemId) {
+    public void setProblemId(String problemId) {
         this.problemId = problemId;
     }
 
@@ -29,4 +28,14 @@ public class ProblemsDTO {
     public void setProblemLink(String problemLink) {
         this.problemLink = problemLink;
     }
+
+    public Integer getContestId() {
+        return contestId;
+    }
+    public void setContestId(Integer contestId) {
+        this.contestId = contestId;
+    }
+
+
 }
+*/

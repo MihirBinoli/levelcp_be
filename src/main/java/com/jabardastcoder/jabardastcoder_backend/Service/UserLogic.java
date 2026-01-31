@@ -23,4 +23,6 @@ public interface UserLogic {
 
 
     Iterable<UserProblemMapEntity> getExistingProblem(Long id);
+
+    void saveUserProblems(List<UserProblemMapEntity> userProblemMapEntityLs);
 }

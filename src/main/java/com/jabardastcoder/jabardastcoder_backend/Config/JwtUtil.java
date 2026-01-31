@@ -4,9 +4,11 @@ package com.jabardastcoder.jabardastcoder_backend.Config;
 import com.jabardastcoder.jabardastcoder_backend.DTO.Request.LoginRequest;
 import com.jabardastcoder.jabardastcoder_backend.Entity.UserEntity;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -45,5 +47,25 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public String getEmailFromToken(String refreshToken) {
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(Keys.hmacShaKeyFor(SECRET.getBytes()))
+                    .parseClaimsJws(refreshToken)
+                    .getBody();
+
+            return claims.getSubject(); // usually, the subject is the email or username
+        }catch (ExpiredJwtException e) {
+            // Token is expired, but we can still extract claims
+            return e.getClaims().getSubject();
+        }
+        catch (SignatureException e) {
+            // invalid signature
+            throw new RuntimeException("Invalid JWT signature");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse JWT token");
+        }
     }
 }

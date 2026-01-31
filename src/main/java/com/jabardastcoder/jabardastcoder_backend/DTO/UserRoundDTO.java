@@ -1,5 +1,6 @@
 package com.jabardastcoder.jabardastcoder_backend.DTO;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public class UserRoundDTO {
@@ -10,7 +11,8 @@ public class UserRoundDTO {
     private Long roundId;
     private String roundName;
     private Long levelId;
-    private List<ProblemsDTO> userProblems;
+    private List<String> userProblems;
+    private OffsetDateTime startTime;
 
     public Integer getId() {
         return id;
@@ -60,11 +62,17 @@ public class UserRoundDTO {
         this.levelId = levelId;
     }
 
-    public List<ProblemsDTO> getUserProblems() {
+    public List<String> getUserProblems() {
         return userProblems;
     }
 
-    public void setUserProblems(List<ProblemsDTO> userProblems) {
+    public void setUserProblems(List<String> userProblems) {
         this.userProblems = userProblems;
+    }
+    public OffsetDateTime getStartTime() {
+        return startTime;
+    }
+    public void setStartTime(OffsetDateTime startTime) {
+        this.startTime = startTime;
     }
 }

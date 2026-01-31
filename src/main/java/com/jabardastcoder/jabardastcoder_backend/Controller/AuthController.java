@@ -5,7 +5,11 @@ import com.jabardastcoder.jabardastcoder_backend.DTO.Request.LoginRequest;
 import com.jabardastcoder.jabardastcoder_backend.DTO.Response.LoginResponse;
 import com.jabardastcoder.jabardastcoder_backend.Service.Impl.AuthService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -35,4 +39,12 @@ public class AuthController {
     public LoginResponse addCfHandle(@RequestBody LoginRequest request){
         return authService.addCfHandle(request);
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@CookieValue(value = "refreshToken", required = false) String refreshToken) {
+
+        return authService.createRefreshToken(refreshToken);
+
+    }
+
 }

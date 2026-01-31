@@ -1,11 +1,17 @@
 package com.jabardastcoder.jabardastcoder_backend.Service.Impl;
 
+import com.jabardastcoder.jabardastcoder_backend.DAO.RoundDAO;
+import com.jabardastcoder.jabardastcoder_backend.DAO.RoundProblemMapDAO;
 import com.jabardastcoder.jabardastcoder_backend.Entity.CodeforcesProblemEntity;
 import com.jabardastcoder.jabardastcoder_backend.DAO.CodeforcesProblemDAO;
+import com.jabardastcoder.jabardastcoder_backend.Entity.RoundEntity;
+import com.jabardastcoder.jabardastcoder_backend.Entity.RoundProblemMapEntity;
 import com.jabardastcoder.jabardastcoder_backend.Service.RoundSubLogic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class RoundSubLogicImpl implements RoundSubLogic {
@@ -13,6 +19,12 @@ public class RoundSubLogicImpl implements RoundSubLogic {
 
     @Autowired
     CodeforcesProblemDAO codeforcesProblemDAO;
+
+    @Autowired
+    RoundDAO roundDAO;
+
+    @Autowired
+    RoundProblemMapDAO roundProblemMapDAO;
 
     @Override
     public Iterable<CodeforcesProblemEntity> getContestProblems(Integer minRating, Integer maxRating) {
@@ -36,5 +48,20 @@ public class RoundSubLogicImpl implements RoundSubLogic {
     private static Specification<CodeforcesProblemEntity> hasTag(String tag) {
         return (root, query, cb) ->
                 cb.like(root.get("problemTags"), "%" + tag + "%");
+    }
+
+    @Override
+    public RoundEntity saveUserRoundEntity(RoundEntity roundsEntity) {
+        return roundDAO.save(roundsEntity);
+    }
+
+    @Override
+    public void saveRoundProblemMap(List<RoundProblemMapEntity> roundProblemMapEntityLs) {
+        roundProblemMapDAO.saveAll(roundProblemMapEntityLs);
+    }
+
+    @Override
+    public List<RoundEntity> getUserRounds(Long userId) {
+        return roundDAO.findAllByUserId(userId);
     }
 }

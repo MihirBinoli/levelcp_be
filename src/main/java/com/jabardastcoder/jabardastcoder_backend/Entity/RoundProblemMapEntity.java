@@ -1,37 +1,31 @@
 package com.jabardastcoder.jabardastcoder_backend.Entity;
 
-
 import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "user_problem_map")
-public class UserProblemMapEntity implements Serializable {
+@Table(name = "round_problem_map")
+public class RoundProblemMapEntity implements Serializable {
 
-
-    private static final long serialVersionUID = -2632996101239071748L;
-
+    private static final long serialVersionUID = 4835308083113458274L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;
-
-    @Column(name = "contest_id")
-    private Integer contestId;
+    @Column(name = "round_id")
+    private Long roundId;
 
     @Column(name = "problem_id")
     private Integer problemId;
 
-    @Column(name = "used_at")
-    private OffsetDateTime usedAt;
-
     @Column(name = "active")
     private Boolean active;
+
+    @Column(name = "created_at")
+    private OffsetDateTime createdAt;
 
     public Long getId() {
         return id;
@@ -41,20 +35,12 @@ public class UserProblemMapEntity implements Serializable {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getRoundId() {
+        return roundId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Integer getContestId() {
-        return contestId;
-    }
-
-    public void setContestId(Integer contestId) {
-        this.contestId = contestId;
+    public void setRoundId(Long roundId) {
+        this.roundId = roundId;
     }
 
     public Integer getProblemId() {
@@ -65,19 +51,19 @@ public class UserProblemMapEntity implements Serializable {
         this.problemId = problemId;
     }
 
-    public OffsetDateTime getUsedAt() {
-        return usedAt;
-    }
-
-    public void setUsedAt(OffsetDateTime usedAt) {
-        this.usedAt = usedAt;
-    }
-
     public Boolean getActive() {
         return active;
     }
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
