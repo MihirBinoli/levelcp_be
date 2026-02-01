@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jabardastcoder.jabardastcoder_backend.Entity.CodeforcesProblemEntity;
 import com.jabardastcoder.jabardastcoder_backend.DAO.CodeforcesProblemDAO;
 import jakarta.transaction.Transactional;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.logging.Logger;
 @Service
 public class CFUtility {
 
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(CFUtility.class);
     static Logger logger = Logger.getLogger(CFUtility.class.getName());
     // all the cf calling methods will be here
 
@@ -76,7 +78,8 @@ public class CFUtility {
                 int contestId = problem.get("contestId").asInt();
                 String index = problem.get("index").asText();
                 String name = problem.get("name").asText();
-                int rating = problem.has("points") ? problem.get("points").asInt() : 0;
+                int rating = problem.has("rating") ? problem.get("rating").asInt() : 0;
+                int points = problem.has("points") ? problem.get("points").asInt() : 0;
 
                 // Convert tags array to comma-separated string
                 StringBuilder tagsBuilder = new StringBuilder();
@@ -96,15 +99,28 @@ public class CFUtility {
                 CodeforcesProblemEntity p = problemRepository.findByCfContestIdAndCfProblemId(contestId, index)
                         .orElse(new CodeforcesProblemEntity());
 
+                // ____________ check the problem _____________
+//                if(p.getProblemName().equalsIgnoreCase("BattleCows 2")){
+//                    logger.info("BattleCows 2");
+//                    logger.info(tags);
+//                    logger.info("problem rating --- -- " + rating);
+//                    break;
+//                }
+
                 p.setCfContestId(contestId);
                 p.setCfProblemId(index);
                 p.setProblemName(name);
-                p.setProblemRating(rating);
+                p.setProblemRating(rating != 0 ? rating : points);
                 p.setProblemTags(tags);
                 p.setCfProblemSolvedCount(solvedCount);
                 p.setActive(true);
-                p.setVersion(1);
-                p.setCreatedAt(OffsetDateTime.now());
+                if(p.getId()!=null){
+                    p.setVersion(p.getVersion()+1);
+                    p.setUpdatedAt(OffsetDateTime.now());
+                }else{
+                    p.setVersion(1);
+                    p.setUpdatedAt(OffsetDateTime.now());
+                }
 
                 problemRepository.save(p);
 

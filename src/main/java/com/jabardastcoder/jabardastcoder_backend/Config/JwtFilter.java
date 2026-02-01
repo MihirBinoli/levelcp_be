@@ -2,6 +2,9 @@ package com.jabardastcoder.jabardastcoder_backend.Config;
 
 import com.jabardastcoder.jabardastcoder_backend.Entity.UserEntity;
 import com.jabardastcoder.jabardastcoder_backend.DAO.UserDAO;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,12 +25,14 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
 
+    private static final String SECRET = "jabardastcoder-secret-key-very-long";
+
     @Autowired
     private UserDAO userDAO;
 
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response,FilterChain filterChain) throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
 
@@ -37,22 +42,27 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (jwtUtil.isTokenValid(token)) {
 
-                String email = jwtUtil.extractEmail(token);
+                Claims claims = jwtUtil.extractClaims(token);
 
-                UserEntity user = userDAO.findByEmail(email).orElse(null);
+                Long userId = claims.get("userId", Long.class);
+                String email = claims.getSubject();
 
-                if (user != null) {
-                    UsernamePasswordAuthenticationToken auth =
-                            new UsernamePasswordAuthenticationToken(
-                                    user,
-                                    null, List.of()
-                            );
+                CustomUserPrincipal principal =
+                        new CustomUserPrincipal(userId, email);
 
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                }
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                principal,
+                                null,
+                                null
+                        );
+
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
             }
         }
 
         filterChain.doFilter(request, response);
     }
+
 }

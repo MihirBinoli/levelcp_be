@@ -63,7 +63,7 @@ public class AuthService {
 
         UserEntity saved = userDAO.save(user);
 
-        String token = jwtUtil.generateToken(saved);
+        String token = jwtUtil.generateToken(saved, "ACCESS");
 
         return new LoginResponse(token);
     }
@@ -77,7 +77,7 @@ public class AuthService {
             throw new RuntimeException("Invalid credentials");
         }
 
-        String token = jwtUtil.generateToken(user);
+        String token = jwtUtil.generateToken(user, "ACCESS");
 
         return new LoginResponse(token);
     }
@@ -123,7 +123,7 @@ public class AuthService {
                 }
 
                 user.setCodeforcesHandle(request.getCfHandle());
-                String token = jwtUtil.generateToken(user);
+                String token = jwtUtil.generateToken(user, "REFRESH");
                 return new LoginResponse(token);
             } catch (HttpServerErrorException e) {
                 throw new RuntimeException(e);
@@ -142,7 +142,7 @@ public class AuthService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
         }
 
-        String newAccessToken = jwtUtil.generateToken(user);
+        String newAccessToken = jwtUtil.generateToken(user, "REFRESH");
         return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
     }
 }

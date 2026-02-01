@@ -19,9 +19,11 @@ public class JwtUtil {
     private static final String SECRET = "jabardastcoder-secret-key-very-long";
     private static final long EXPIRATION = 1000 * 60 * 60;
 
-    public String generateToken(UserEntity user) {
+    public String generateToken(UserEntity user, String tokenType) {
         return Jwts.builder()
                 .setSubject(user.getEmail())
+                .claim("userId", user.getId())
+                .claim("type", tokenType)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()), SignatureAlgorithm.HS256)
@@ -51,10 +53,7 @@ public class JwtUtil {
 
     public String getEmailFromToken(String refreshToken) {
         try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(Keys.hmacShaKeyFor(SECRET.getBytes()))
-                    .parseClaimsJws(refreshToken)
-                    .getBody();
+            Claims claims = extractClaims(refreshToken);
 
             return claims.getSubject(); // usually, the subject is the email or username
         }catch (ExpiredJwtException e) {
@@ -67,5 +66,13 @@ public class JwtUtil {
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse JWT token");
         }
+    }
+
+    public Claims extractClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(SECRET.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }

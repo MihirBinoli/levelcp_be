@@ -1,5 +1,6 @@
 package com.jabardastcoder.jabardastcoder_backend.Service.Impl;
 
+import com.jabardastcoder.jabardastcoder_backend.Config.UserContext;
 import com.jabardastcoder.jabardastcoder_backend.DTO.UserRoundDTO;
 import com.jabardastcoder.jabardastcoder_backend.Entity.*;
 import com.jabardastcoder.jabardastcoder_backend.DAO.LevelsDAO;
@@ -47,7 +48,7 @@ User
  → Update level
         * */
         try {
-            Optional<UserEntity> userEntityOp = userLogic.checkUserExist(userRoundDTO.getUserId());
+            Optional<UserEntity> userEntityOp = userLogic.checkUserExist(UserContext.getCurrentUserId());
 
             if(userEntityOp.isPresent()){
                 // user registered
