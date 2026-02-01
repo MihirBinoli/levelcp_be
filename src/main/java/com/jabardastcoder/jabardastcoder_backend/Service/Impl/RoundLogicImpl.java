@@ -56,7 +56,7 @@ User
                 String cfHandle = userEntity.getCodeforcesHandle();
                 if(Objects.nonNull(cfHandle)){
                     // fetch current rating and maxrating from level id
-                    Integer levelId = userEntity.getCurrentLevelId();
+                    Integer levelId = userRoundDTO.getLevelId().intValue();
                     // fetch min - max rating on the basis of user current level
                     Optional<LevelsEntity> levelsEntityOp = levelsDAO.findByLevelNumber(levelId);
 
@@ -94,26 +94,24 @@ User
 
                     int averageSolve =  totalSolveCount / totalProblems;
 
-                    int counter = 0;
+                    int counter = 1;
                     for(Map.Entry<String, CodeforcesProblemEntity> entry : codeforcesProblemEntityMap.entrySet()){
                         if(counter < 4){
                             // add new problems
                             problemsForNewContest.add(entry.getValue());
                             counter++;
+                            continue;
                         }
+                        break;
                     }
-                    // search for problem nearling to average solve count
+                    // search for problem nearing to average solve count
 
                     List<CodeforcesProblemEntity> sortedProblemsForNewContest = new ArrayList<>(codeforcesProblemEntityMap.values());
 
                     sortedProblemsForNewContest.sort(Comparator.comparing(CodeforcesProblemEntity::getCfProblemSolvedCount));
-
                     CodeforcesProblemEntity averageSolveCountProblem = findAverageSolveCountProblem(sortedProblemsForNewContest, averageSolve);
-
                     problemsForNewContest.add(averageSolveCountProblem);
-
                     // create user round map, user problem map, and return user round dto with start time.
-
                     userRoundDTO = createUserRound(userEntity , problemsForNewContest, levelId);
 
                     List<String> problemLinks = new ArrayList<>();
@@ -144,6 +142,7 @@ User
         userRoundDTO.setUserId(userEntity.getId());
         userRoundDTO.setUserName(userEntity.getUsername());
         userRoundDTO.setLevelId(levelId.longValue());
+        userRoundDTO.setStartTime(OffsetDateTime.now());
 
         // create user round map
         RoundEntity roundsEntity = new RoundEntity();
