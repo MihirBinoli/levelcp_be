@@ -1,11 +1,13 @@
 package com.levelUpZone.levelUpZone_backend.Service.Impl;
 
+import com.levelUpZone.levelUpZone_backend.Config.UserContext;
 import com.levelUpZone.levelUpZone_backend.DAO.*;
 import com.levelUpZone.levelUpZone_backend.DTO.ContestHistory;
 import com.levelUpZone.levelUpZone_backend.DTO.ProblemDTO;
 import com.levelUpZone.levelUpZone_backend.DTO.Request.JabardastRequest;
-import com.levelUpZone.levelUpZone_backend.DTO.Response.JabardastResponse;
+import com.levelUpZone.levelUpZone_backend.DTO.Response.LevelUpZoneResponse;
 import com.levelUpZone.levelUpZone_backend.Entity.*;
+import com.levelUpZone.levelUpZone_backend.Exception.ResourceNotFoundException;
 import com.levelUpZone.levelUpZone_backend.Service.RoundSubLogic;
 import com.levelUpZone.levelUpZone_backend.Service.UserLogic;
 import com.levelUpZone.levelUpZone_backend.Util.CFUtility;
@@ -58,17 +60,16 @@ public class UserServiceLogicImpl implements UserLogic {
     }
 
     @Override
-    public List<JabardastResponse> getAllUsers() {
+    public List<LevelUpZoneResponse> getAllUsers() {
         List<UserEntity> list = userDAO.findAll();
-        List<JabardastResponse> jabardastResponses = new ArrayList<>();
+        List<LevelUpZoneResponse> levelUpZoneRespons = new ArrayList<>();
 
         list.forEach(userEntity -> {
-            JabardastResponse jabardastResponse = new JabardastResponse();
-            jabardastResponse.setName(userEntity.getUsername());
-            jabardastResponse.setEmail(userEntity.getEmail());
-            jabardastResponses.add(jabardastResponse);
+            LevelUpZoneResponse levelUpZoneResponse = new LevelUpZoneResponse.Builder()
+                    .username(userEntity.getUsername()).email(userEntity.getEmail()).build();
+            levelUpZoneRespons.add(levelUpZoneResponse);
         });
-        return jabardastResponses;
+        return levelUpZoneRespons;
     }
 
     @Override
@@ -170,6 +171,23 @@ public class UserServiceLogicImpl implements UserLogic {
             return contestHistories;
         }else{
             throw new RuntimeException(userId+"");
+        }
+    }
+
+    @Override
+    public LevelUpZoneResponse getUserDetails() {
+        Long userId = UserContext.getCurrentUserId();
+        Optional<UserEntity> userEntityOp = userDAO.findById(userId);
+        if(userEntityOp.isPresent()){
+            UserEntity  userEntity = userEntityOp.get();
+            LevelUpZoneResponse levelUpZoneResponse = new LevelUpZoneResponse
+                    .Builder()
+                    .id(userId.intValue()).username(userEntity.getUsername()).email(userEntity.getEmail())
+                    .codeforcesHandle(userEntity.getCodeforcesHandle())
+                    .currentLevelId(userEntity.getCurrentLevelId()).build();
+            return levelUpZoneResponse;
+        }else{
+            throw new ResourceNotFoundException("Invalid Bearer Token");
         }
     }
 }

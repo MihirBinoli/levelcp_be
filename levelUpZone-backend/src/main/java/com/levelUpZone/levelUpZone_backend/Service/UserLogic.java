@@ -3,7 +3,7 @@ package com.levelUpZone.levelUpZone_backend.Service;
 
 import com.levelUpZone.levelUpZone_backend.DTO.ContestHistory;
 import com.levelUpZone.levelUpZone_backend.DTO.Request.JabardastRequest;
-import com.levelUpZone.levelUpZone_backend.DTO.Response.JabardastResponse;
+import com.levelUpZone.levelUpZone_backend.DTO.Response.LevelUpZoneResponse;
 import com.levelUpZone.levelUpZone_backend.Entity.UserEntity;
 import com.levelUpZone.levelUpZone_backend.Entity.UserProblemMapEntity;
 
@@ -17,7 +17,7 @@ public interface UserLogic {
 
     Optional<UserEntity> checkUserExist(Long userId);
 
-    List<JabardastResponse> getAllUsers();
+    List<LevelUpZoneResponse> getAllUsers();
 
     void fetchAndUpdateProblems(JabardastRequest request);
 
@@ -29,4 +29,6 @@ public interface UserLogic {
     void saveUserProblems(List<UserProblemMapEntity> userProblemMapEntityLs);
 
     List<ContestHistory> getUserContestHistory(Long userId);
+
+    LevelUpZoneResponse getUserDetails();
 }

@@ -3,7 +3,7 @@ package com.levelUpZone.levelUpZone_backend.Controller;
 
 import com.levelUpZone.levelUpZone_backend.DTO.ContestHistory;
 import com.levelUpZone.levelUpZone_backend.DTO.Request.JabardastRequest;
-import com.levelUpZone.levelUpZone_backend.DTO.Response.JabardastResponse;
+import com.levelUpZone.levelUpZone_backend.DTO.Response.LevelUpZoneResponse;
 import com.levelUpZone.levelUpZone_backend.Service.UserLogic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ public class LevelUpZoneController {
 
 
     @GetMapping("getAllUsers")
-    public List<JabardastResponse> getAllUsers()
+    public List<LevelUpZoneResponse> getAllUsers()
     {
         return userLogic.getAllUsers();
     }
@@ -42,6 +42,11 @@ public class LevelUpZoneController {
     @GetMapping("getUserContestHistory")
     public List<ContestHistory> getUserContestHistory(@RequestParam Long userId){
         return userLogic.getUserContestHistory(userId);
+    }
+
+    @GetMapping("details")
+    public LevelUpZoneResponse details(){
+        return userLogic.getUserDetails();
     }
 
 

@@ -124,6 +124,7 @@ public class AuthService {
                 }
 
                 user.setCodeforcesHandle(request.getCfHandle());
+                userDAO.save(user);
                 String token = jwtUtil.generateToken(user, "REFRESH");
                 return new LoginResponse(token);
             } catch (HttpServerErrorException e) {

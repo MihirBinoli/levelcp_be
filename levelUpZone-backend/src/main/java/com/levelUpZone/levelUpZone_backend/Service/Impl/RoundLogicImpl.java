@@ -4,6 +4,7 @@ import com.levelUpZone.levelUpZone_backend.Config.UserContext;
 import com.levelUpZone.levelUpZone_backend.DTO.UserRoundDTO;
 import com.levelUpZone.levelUpZone_backend.DAO.LevelsDAO;
 import com.levelUpZone.levelUpZone_backend.Entity.*;
+import com.levelUpZone.levelUpZone_backend.Exception.ResourceNotFoundException;
 import com.levelUpZone.levelUpZone_backend.Service.RoundLogic;
 import com.levelUpZone.levelUpZone_backend.Service.UserLogic;
 import com.levelUpZone.levelUpZone_backend.Util.RoundStatus;
@@ -44,7 +45,7 @@ User
  → Update level
         * */
         try {
-            Optional<UserEntity> userEntityOp = userLogic.checkUserExist(UserContext.getCurrentUserId());
+            Optional<UserEntity> userEntityOp = userLogic.checkUserExist(userRoundDTO.getUserId());
 
             if(userEntityOp.isPresent()){
                 // user registered
@@ -122,14 +123,14 @@ User
 
                 }else{
                     // prompt user to sync codeforces id and then try again
-                    throw new RuntimeException("User not synced his codeforces accound");
+                    throw new ResourceNotFoundException("User not synced his codeforces accound");
                 }
 
             }
             return null;
         }catch (Exception e){
             // user not registered and userid is null
-            throw new RuntimeException(e.getMessage());
+            throw new ResourceNotFoundException(userRoundDTO.getUserId().toString());
         }
     }
 
