@@ -4,6 +4,7 @@ import com.levelUpZone.levelUpZone_backend.Config.UserContext;
 import com.levelUpZone.levelUpZone_backend.DTO.UserRoundDTO;
 import com.levelUpZone.levelUpZone_backend.DAO.LevelsDAO;
 import com.levelUpZone.levelUpZone_backend.Entity.*;
+import com.levelUpZone.levelUpZone_backend.Exception.ResourceNotFoundException;
 import com.levelUpZone.levelUpZone_backend.Service.RoundLogic;
 import com.levelUpZone.levelUpZone_backend.Service.UserLogic;
 import com.levelUpZone.levelUpZone_backend.Util.RoundStatus;
@@ -44,7 +45,7 @@ User
  → Update level
         * */
         try {
-            Optional<UserEntity> userEntityOp = userLogic.checkUserExist(UserContext.getCurrentUserId());
+            Optional<UserEntity> userEntityOp = userLogic.checkUserExist(userRoundDTO.getUserId());
 
             if(userEntityOp.isPresent()){
                 // user registered
@@ -81,7 +82,7 @@ User
                                                     a : b
                             ));
                     List<CodeforcesProblemEntity> problemsForNewContest = new ArrayList<>();
-                    // get 4 problems 3 easy and 1 medium according to solve count
+                    // get N problems N-1 easy and 1 medium according to solve count
 
                     Integer totalSolveCount = codeforcesProblemEntityMap.values().stream()
                             .mapToInt(CodeforcesProblemEntity::getCfProblemSolvedCount).sum();
@@ -92,7 +93,7 @@ User
 
                     int counter = 1;
                     for(Map.Entry<String, CodeforcesProblemEntity> entry : codeforcesProblemEntityMap.entrySet()){
-                        if(counter < 4){
+                        if(counter < userRoundDTO.getQuestionCount()){
                             // add new problems
                             problemsForNewContest.add(entry.getValue());
                             counter++;
@@ -122,14 +123,14 @@ User
 
                 }else{
                     // prompt user to sync codeforces id and then try again
-                    throw new RuntimeException("User not synced his codeforces accound");
+                    throw new ResourceNotFoundException("User not synced his codeforces accound");
                 }
 
             }
             return null;
         }catch (Exception e){
             // user not registered and userid is null
-            throw new RuntimeException(e.getMessage());
+            throw new ResourceNotFoundException(userRoundDTO.getUserId().toString());
         }
     }
 
@@ -157,6 +158,8 @@ User
             RoundProblemMapEntity roundProblemMapEntity = new RoundProblemMapEntity();
             roundProblemMapEntity.setRoundId(problem.getId());
             roundProblemMapEntity.setProblemId(problem.getId().intValue());
+            roundProblemMapEntity.setActive(true);
+            roundProblemMapEntity.setCreatedAt(OffsetDateTime.now());
             roundProblemMapEntityLs.add(roundProblemMapEntity);
         });
         roundSubLogic.saveRoundProblemMap(roundProblemMapEntityLs);
@@ -169,6 +172,8 @@ User
             userProblemMapEntity.setUserId(userEntity.getId());
             userProblemMapEntity.setProblemId(problem.getId().intValue());
             userProblemMapEntity.setContestId(problem.getCfContestId());
+            userProblemMapEntity.setActive(true);
+            userProblemMapEntity.setUsedAt(OffsetDateTime.now());
             userProblemMapEntityLs.add(userProblemMapEntity);
         });
         userLogic.saveUserProblems(userProblemMapEntityLs);

@@ -26,7 +26,7 @@ public class CFUtility {
     // all the cf calling methods will be here
 
     @Value(value = "${cfURL}")
-    private static String cfUrl;
+    private String cfUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
